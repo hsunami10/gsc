@@ -51,12 +51,14 @@ private:
     dbo::weak_ptr<Grader_eval> grader_eval_;
     std::string                explanation_;
     double                     score_;
-    std::string                permalink_;
     Wt::WDateTime              time_stamp_;
 
     void touch_();
 
 public:
+    // Temporarily public for random reset
+    std::string                permalink_;
+
     static const int permalink_size = 16;
 
     template<typename Action>

@@ -12,6 +12,7 @@
 #include "Partner_request.h"
 #include "Submission.h"
 #include "../Navigate.h"
+#include "Permalink.h"
 
 #include <Wt/Auth/AuthService>
 #include <Wt/Auth/HashFunction>
@@ -60,12 +61,19 @@ Session::Session(dbo::SqlConnectionPool& pool)
 
     map_classes(*this);
 
+    {
+        dbo::Transaction transaction(*this);
+        for (auto self_eval : find<Self_eval>().resultList()) {
+            self_eval.modify()->permalink_ = create_permalink(16);
+        }
+    }
+
     dbo::Transaction transaction(*this);
     try {
         createTables();
 
         create_index("users", "name", false);
-        create_index("self_evals", "permalink", false);
+        create_index("self_evals", "permalink");
 
         Auth::User root_user = users_.registerNew();
         root_user.addIdentity(Auth::Identity::LoginName, "root");
